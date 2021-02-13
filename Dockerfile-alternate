@@ -1,0 +1,17 @@
+FROM wordpress
+
+COPY wp-config.php composer.json .env /var/www/html/
+RUN apt-get update && apt-get install -y vim && apt-get install -y unzip; \
+    curl -sL https://deb.nodesource.com/setup_15.x | bash - && apt-get install -yq nodejs && apt-get install -yq git-core; \
+    curl -sS https://getcomposer.org/installer -o composer-setup.php && \
+    php composer-setup.php --install-dir=/usr/local/bin --filename=composer;
+    
+RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
+chmod +x wp-cli.phar && \
+mv wp-cli.phar /usr/local/bin/wp && \
+echo 'wp() {' >> ~/.bashrc && \
+echo '/usr/local/bin/wp "$@" --allow-root' >> ~/.bashrc && \
+echo '}' >> ~/.bashrc
+
+RUN echo "ServerName 127.0.0.1" >> /etc/apache2/apache2.conf
+

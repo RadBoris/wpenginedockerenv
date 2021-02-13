@@ -1,0 +1,40 @@
+version: '3.1'
+
+services:
+  wordpress:
+    build:
+      context: .
+      dockerfile: Dockerfile-alternate
+    restart: always
+    ports:
+      - 8080:80
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: exampleuser
+      WORDPRESS_DB_PASSWORD: examplepass
+      WORDPRESS_DB_NAME: exampledb
+    volumes:
+      - wordpress:/var/www/html
+  db:
+    image: mariadb
+    restart: always
+    environment:
+      MYSQL_DATABASE: exampledb
+      MYSQL_USER: exampleuser
+      MYSQL_PASSWORD: examplepass
+      MYSQL_ROOT_PASSWORD: 123456
+    volumes:
+      - db:/var/lib/mysql
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:5.6.6
+    environment:
+      - xpack.security.enabled=false
+      - discovery.type=single-node
+    restart: always
+    ports:
+      - '9200:9200'
+      - '9300:9300'
+volumes:
+  wordpress:
+  db:
+  elasticsearch:
